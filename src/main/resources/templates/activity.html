@@ -1,0 +1,302 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Activity Log</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            color: #222222;
+            margin: 0;
+            padding: 40px 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            margin: auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #cccccc;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Dark/Light Mode Button */
+
+        .theme-button {
+            display: block;
+            margin: 0 auto 30px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #333333;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .theme-button:hover {
+            background-color: #555555;
+        }
+
+        /* Table */
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+
+        th,
+        td {
+            border: 1px solid #cccccc;
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #333333;
+            color: white;
+        }
+
+        td {
+            background-color: white;
+        }
+
+        /* Activity Colors */
+
+        .registered {
+            color: green;
+            font-weight: bold;
+        }
+
+        .updated {
+            color: #0066cc;
+            font-weight: bold;
+        }
+
+        .deleted {
+            color: red;
+            font-weight: bold;
+        }
+
+        /* Navigation Buttons */
+
+        .button {
+            display: block;
+            width: 220px;
+            margin: 15px auto 0;
+            padding: 12px;
+            text-align: center;
+            text-decoration: none;
+            background-color: #333333;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .button:hover {
+            background-color: #555555;
+        }
+
+        /* Dark Mode */
+
+        body.dark-mode {
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+
+        body.dark-mode .container {
+            background-color: #2b2b2b;
+            box-shadow: 0 0 10px #111111;
+        }
+
+        body.dark-mode .theme-button {
+            background-color: #eeeeee;
+            color: #222222;
+        }
+
+        body.dark-mode .theme-button:hover {
+            background-color: #cccccc;
+        }
+
+        body.dark-mode th {
+            background-color: #111111;
+        }
+
+        body.dark-mode td {
+            background-color: #3a3a3a;
+            color: #ffffff;
+            border-color: #666666;
+        }
+
+        body.dark-mode .button {
+            background-color: #555555;
+        }
+
+        body.dark-mode .button:hover {
+            background-color: #777777;
+        }
+
+        /* Mobile */
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            th,
+            td {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            .button {
+                width: 100%;
+            }
+
+            .theme-button {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>📝 Activity Log</h1>
+
+        <!-- Dark/Light Mode -->
+
+        <button type="button" id="themeToggle" class="theme-button">
+            🌙 Dark Mode
+        </button>
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+                        <th>Action</th>
+                        <th>Student Name</th>
+                        <th>Date & Time</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr th:each="log : ${logs}">
+
+                        <td th:text="${log.id}"></td>
+
+                        <td>
+
+                            <span th:if="${log.action == 'REGISTERED'}"
+                                  class="registered"
+                                  th:text="${log.action}">
+                            </span>
+
+                            <span th:if="${log.action == 'UPDATED'}"
+                                  class="updated"
+                                  th:text="${log.action}">
+                            </span>
+
+                            <span th:if="${log.action == 'DELETED'}"
+                                  class="deleted"
+                                  th:text="${log.action}">
+                            </span>
+
+                        </td>
+
+                        <td th:text="${log.studentName}"></td>
+
+                        <td th:text="${#temporals.format(log.timestamp, 'dd-MM-yyyy HH:mm:ss')}"></td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <a href="/dashboard" class="button">
+            📊 Back to Dashboard
+        </a>
+
+        <a href="/students" class="button">
+            👨‍🎓 View Students
+        </a>
+
+    </div>
+
+    <script>
+
+        const themeToggle = document.getElementById("themeToggle");
+
+        themeToggle.addEventListener("click", function () {
+
+            document.body.classList.toggle("dark-mode");
+
+            if (document.body.classList.contains("dark-mode")) {
+
+                themeToggle.textContent = "☀️ Light Mode";
+
+            } else {
+
+                themeToggle.textContent = "🌙 Dark Mode";
+
+            }
+
+        });
+
+    </script>
+
+</body>
+
+</html>
+
